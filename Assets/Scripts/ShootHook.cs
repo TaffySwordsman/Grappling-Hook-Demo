@@ -11,6 +11,7 @@ public class ShootHook : MonoBehaviour
 	private bool firstAttach = false;
 	private bool cableAttached = false;
 	private bool retract = false;
+	static float t = 0.0f;
 
 	private GameObject obj1, obj2;
 	private RaycastHit hit1, hit2;
@@ -38,8 +39,12 @@ public class ShootHook : MonoBehaviour
 			ShootStop();
 
 		if (cableAttached && Input.GetKey(KeyCode.LeftControl))
+		{
 			retract = true;
-		else { retract = false; }
+			obj1.GetComponent<Rigidbody>().WakeUp();
+			obj2.GetComponent<Rigidbody>().WakeUp();
+		}
+		else { retract = false; t = 0; }
 
 	}
 
@@ -47,9 +52,10 @@ public class ShootHook : MonoBehaviour
 	{
 		if (retract)
 		{
-			print("retracting");
+			t += 0.5f * Time.deltaTime;
 			float distanceFromPoint = Vector3.Distance(obj1.transform.position, obj2.transform.position);
-			joint.maxDistance = Mathf.Lerp(distanceFromPoint, 0f, Time.time * .05f);
+			joint.maxDistance = Mathf.Lerp(distanceFromPoint, 0f, t);
+			obj1.transform.position = obj1.transform.position;
 		}
 	}
 
